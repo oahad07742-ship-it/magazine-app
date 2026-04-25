@@ -1,0 +1,28 @@
+name: Build APK
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+      - run: mkdir -p lib/models lib/services lib/screens
+      - run: mv main.dart lib/ 2>/dev/null; mv theme.dart lib/ 2>/dev/null
+      - run: mv article.dart lib/models/ 2>/dev/null
+      - run: mv api_service.dart lib/services/ 2>/dev/null
+      - run: mv auth_service.dart lib/services/ 2>/dev/null
+      - run: mv admin_screen.dart lib/screens/ 2>/dev/null
+      - run: mv app_wrapper.dart lib/screens/ 2>/dev/null
+      - run: mv article_card.dart lib/screens/ 2>/dev/null
+      - run: mv article_detail_screen.dart lib/screens/ 2>/dev/null
+      - run: mv home_screen.dart lib/screens/ 2>/dev/null
+      - run: mv login_screen.dart lib/screens/ 2>/dev/null
+      - run: mv main_screen.dart lib/screens/ 2>/dev/null
+      - run: flutter pub get
+      - run: flutter build apk --release
+      - uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
