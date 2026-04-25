@@ -1,0 +1,44 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.16.0'
+
+      - name: إعادة ترتيب الملفات
+        run: |
+          mkdir -p lib/models lib/services lib/screens
+          mv -f main.dart lib/ 2>/dev/null || true
+          mv -f theme.dart lib/ 2>/dev/null || true
+          mv -f article.dart lib/models/ 2>/dev/null || true
+          mv -f api_service.dart lib/services/ 2>/dev/null || true
+          mv -f auth_service.dart lib/services/ 2>/dev/null || true
+          mv -f admin_screen.dart lib/screens/ 2>/dev/null || true
+          mv -f app_wrapper.dart lib/screens/ 2>/dev/null || true
+          mv -f article_card.dart lib/screens/ 2>/dev/null || true
+          mv -f article_detail_screen.dart lib/screens/ 2>/dev/null || true
+          mv -f home_screen.dart lib/screens/ 2>/dev/null || true
+          mv -f login_screen.dart lib/screens/ 2>/dev/null || true
+          mv -f main_screen.dart lib/screens/ 2>/dev/null || true
+
+      - name: تثبيت الحزم
+        run: flutter pub get
+
+      - name: بناء التطبيق
+        run: flutter build apk --release
+
+      - name: رفع الملف الناتج
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-release
+          path: build/app/outputs/flutter-apk/app-release.apk
